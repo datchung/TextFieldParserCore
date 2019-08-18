@@ -17,7 +17,7 @@ namespace TextFieldParserCore.Test
 A,B,C
 D,E,F")))
             {
-                using (var parser = new TextFieldParserCore(streamReader))
+                using (var parser = new TextFieldParser(streamReader))
                 {
                     parser.TextFieldType = FieldType.Delimited;
                     parser.SetDelimiters(",");
