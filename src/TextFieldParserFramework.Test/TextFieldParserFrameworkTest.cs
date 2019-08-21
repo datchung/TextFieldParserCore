@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace TextFieldParserFramework.Test
@@ -10,18 +11,48 @@ namespace TextFieldParserFramework.Test
     public class TextFieldParserFrameworkTest
     {
         [Test]
-        public void ParseCsv()
+        [TestCase(",", "comma delimited")]
+        [TestCase("\t", "tab delimited")]
+        public void ParseDelimted(string delimiter, string message)
+        {
+            var parsedRows = GetParsedRows(
+$@"Col1{delimiter}Col2{delimiter}Col3
+A{delimiter}B{delimiter}C
+D{delimiter}E{delimiter}F", delimiter).ToList();
+
+            Assert.AreEqual(3, parsedRows.Count);
+            var i = 0;
+            var j = 0;
+            var row = parsedRows[i];
+            Assert.AreEqual(3, row.Length, $"{message}: parsedRows[{i}] length");
+            Assert.AreEqual("Col1", row[j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("Col2", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("Col3", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+
+            j = 0;
+            row = parsedRows[++i];
+            Assert.AreEqual(3, row.Length, $"{message}: parsedRows[{i}] length");
+            Assert.AreEqual("A", row[j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("B", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("C", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+
+            j = 0;
+            row = parsedRows[++i];
+            Assert.AreEqual(3, row.Length, $"{message}: parsedRows[{i}] length");
+            Assert.AreEqual("D", row[j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("E", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+            Assert.AreEqual("F", row[++j], $"{message}: parsedRows[{i}] col[{j}]");
+        }
+
+        private static IEnumerable<string[]> GetParsedRows(string content, string delimiter)
         {
             var parsedRows = new List<string[]>();
-            using (var streamReader = new StreamReader(StringToStream(
-@"Col1,Col2,Col3
-A,B,C
-D,E,F")))
+            using (var streamReader = new StreamReader(StringToStream(content)))
             {
                 using (var parser = new TextFieldParser(streamReader))
                 {
                     parser.TextFieldType = FieldType.Delimited;
-                    parser.SetDelimiters(",");
+                    parser.SetDelimiters(delimiter);
 
                     while (!parser.EndOfData)
                     {
@@ -30,28 +61,7 @@ D,E,F")))
                 }
             }
 
-            Assert.AreEqual(3, parsedRows.Count);
-            var i = 0;
-            var j = 0;
-            var row = parsedRows[i];
-            Assert.AreEqual(3, row.Length, $"parsedRows[{i}] length");
-            Assert.AreEqual("Col1", row[j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("Col2", row[++j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("Col3", row[++j], $"parsedRows[{i}] col[{j}]");
-
-            j = 0;
-            row = parsedRows[++i];
-            Assert.AreEqual(3, row.Length, $"parsedRows[{i}] length");
-            Assert.AreEqual("A", row[j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("B", row[++j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("C", row[++j], $"parsedRows[{i}] col[{j}]");
-
-            j = 0;
-            row = parsedRows[++i];
-            Assert.AreEqual(3, row.Length, $"parsedRows[{i}] length");
-            Assert.AreEqual("D", row[j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("E", row[++j], $"parsedRows[{i}] col[{j}]");
-            Assert.AreEqual("F", row[++j], $"parsedRows[{i}] col[{j}]");
+            return parsedRows;
         }
 
         /// <summary>
