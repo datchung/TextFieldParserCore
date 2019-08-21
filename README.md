@@ -3,7 +3,7 @@ A 1 to 1 port of `TextFieldParser` for .NET Core.
 
 ## Getting Started
 
-Install via nuget: `Install-Package TextFieldParserCore -Version 1.0.0`
+Install via nuget: `TextFieldParserCore`
 https://www.nuget.org/packages/TextFieldParserCore/1.0.0
 
 ## Examples
